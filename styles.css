@@ -1,6 +1,5 @@
 :root {
   --white: #ffffff;
-  --green: #60a07f;
   --display: #3b3b3b;
 }
 
@@ -52,16 +51,16 @@ body {
   margin: 10px;
 }
 
-.display .user-input {
-  min-height: 32px;
+.display .upper-display {
+  min-height: 40px;
   padding: 5px 10px;
   font-size: 1.5rem;
   font-weight: 400;
   text-align: right;
-  color: var(--green);
+  color: var(--white);
 }
 
-.display .calc-output {
+.display .lower-display {
   min-height: 48px;
   padding: 5px 10px;
   font-size: 2rem;
