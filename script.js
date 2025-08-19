@@ -25,7 +25,7 @@ function operate(x, y, operator) {
     case "/":
       return div(x, y);
     default:
-      console.error(`[ERROR] Unrecognized operator: ${operator}`);
+      console.error(`ERROR: Unrecognized operator: ${operator}`);
       return;
   }
 }

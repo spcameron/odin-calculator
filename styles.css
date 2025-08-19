@@ -1,0 +1,96 @@
+:root {
+  --white: #ffffff;
+  --green: #60a07f;
+  --display: #3b3b3b;
+}
+
+*,
+*::before,
+*::after {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html {
+  /* footer support */
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  font-family: sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.2;
+  /* footer support */
+  margin-bottom: 100px;
+}
+
+/* header */
+
+/* main */
+
+.main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.container {
+  max-width: 400px;
+  width: 100%;
+}
+
+.calculator {
+  border-radius: 1rem;
+}
+
+.display {
+  background-color: var(--display);
+  margin: 10px;
+}
+
+.display .user-input {
+  min-height: 32px;
+  padding: 5px 10px;
+  font-size: 1.5rem;
+  font-weight: 400;
+  text-align: right;
+  color: var(--green);
+}
+
+.display .calc-output {
+  min-height: 48px;
+  padding: 5px 10px;
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: right;
+  color: var(--white);
+}
+
+.button-pad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 10px;
+  padding: 10px;
+}
+
+.button-pad button {
+  font-size: 1.325rem;
+  font-weight: 600;
+  padding: 1rem 0;
+}
+
+.equals {
+  grid-column: 3 / 5;
+}
+
+/* footer */
+
+footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
