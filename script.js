@@ -13,3 +13,9 @@ function mul(x, y) {
 function div(x, y) {
   return x / y;
 }
+
+function operate(x, y, operator) {}
+
+let firstOperand;
+let secondOperand;
+let operator;
