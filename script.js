@@ -1,9 +1,14 @@
-const firstOperand = "";
-const secondOperand = "";
-const currentOperator = null;
+let firstOperand = "";
+let secondOperand = "";
+let currentOperator = null;
+let shouldReset = false;
 
 const numberButtons = document.querySelectorAll(".numbers");
 const operatorButtons = document.querySelectorAll(".operators");
+const equalsButton = document.getElementById("equals");
+const changeSignButton = document.getElementById("change-sign");
+const clearButton = document.getElementById("all-clear");
+const decimalButton = document.getElementById("decimal");
 const upperDisplay = document.getElementById("upper-display");
 const lowerDisplay = document.getElementById("lower-display");
 
@@ -15,6 +20,48 @@ operatorButtons.forEach((button) =>
   button.addEventListener("click", () => handleOperator(button.value)),
 );
 
+decimalButton.addEventListener("click", () => {
+  handleDecimal();
+});
+
+equalsButton.addEventListener("click", () => {
+  if (secondOperand === "") {
+    return;
+  }
+
+  const result = operate();
+  shouldReset = true;
+  upperDisplay.textContent = lowerDisplay.textContent;
+  clearValues();
+
+  if (result !== undefined) {
+    firstOperand = String(result);
+    updateLowerDisplay();
+  } else {
+    firstOperand = "0";
+    lowerDisplay.textContent = "ERR: DIV BY ZERO";
+  }
+});
+
+changeSignButton.addEventListener("click", () => {
+  if (currentOperator === null) {
+    if (firstOperand === "" || firstOperand === "0") return;
+    firstOperand = String(-Number(firstOperand));
+  } else {
+    if (secondOperand === "" || secondOperand === "0") return;
+    secondOperand = String(-Number(secondOperand));
+  }
+  updateLowerDisplay();
+});
+
+clearButton.addEventListener("click", () => {
+  clearValues();
+  clearUpperDisplay();
+  clearLowerDisplay();
+  shouldReset = false;
+  lowerDisplay.textContent = "0";
+});
+
 function clearLowerDisplay() {
   lowerDisplay.textContent = "";
 }
@@ -23,22 +70,102 @@ function clearUpperDisplay() {
   upperDisplay.textContent = "";
 }
 
-function handleNumber(number) {
-  if (lowerDisplay.currentText === "0") clearLowerDisplay();
-
-  updateLowerDisplay(firstOperand, secondOperand, currentOperator);
+function clearValues() {
+  firstOperand = "";
+  secondOperand = "";
+  currentOperator = null;
 }
 
-function handleOperator() {}
+function handleNumber(number) {
+  if (lowerDisplay.textContent === "0" || shouldReset) {
+    clearValues();
+    clearLowerDisplay();
+    shouldReset = false;
+  }
 
-function updateLowerDisplay(firstNumber, secondNumber, operator) {
-  let displayText = `${firstNumber}`;
+  if (currentOperator === null) {
+    firstOperand = firstOperand + number;
+  } else {
+    secondOperand = secondOperand + number;
+  }
 
-  if (operator !== null) displayText += ` ${operator}`;
+  updateLowerDisplay();
+}
 
-  if (secondNumber !== "") displayText += ` ${secondNumber}`;
+function handleOperator(operator) {
+  if (lowerDisplay.textContent === "0") firstOperand = "0";
 
-  lowerDisplay.currentText = displayText;
+  if (secondOperand === "") {
+    currentOperator = operator;
+    shouldReset = false;
+  } else {
+    const result = operate();
+
+    if (result === undefined) {
+      firstOperand = "0";
+      lowerDisplay.textContent = "ERR: DIV BY ZERO";
+      shouldReset = true;
+      return;
+    }
+
+    upperDisplay.textContent = lowerDisplay.textContent;
+    clearValues();
+    firstOperand = String(result);
+    currentOperator = operator;
+  }
+
+  updateLowerDisplay();
+}
+
+function handleDecimal() {
+  if (shouldReset) {
+    clearValues();
+    clearLowerDisplay();
+    shouldReset = false;
+    lowerDisplay.textContent = "0";
+  }
+
+  if (currentOperator === null) {
+    if (hasDecimal(firstOperand)) return;
+    firstOperand = (firstOperand || "0") + ".";
+  } else {
+    if (hasDecimal(secondOperand)) return;
+    secondOperand = (secondOperand || "0") + ".";
+  }
+
+  updateLowerDisplay();
+}
+
+function updateLowerDisplay() {
+  let displayText = `${firstOperand}`;
+
+  if (currentOperator !== null) displayText += ` ${currentOperator} `;
+
+  if (secondOperand !== "") displayText += `${secondOperand}`;
+
+  lowerDisplay.textContent = displayText;
+}
+
+function hasDecimal(number) {
+  return String(number).indexOf(".") >= 0;
+}
+
+function getOperator() {
+  switch (currentOperator) {
+    case "+":
+      return "+";
+    case "−":
+      return "-";
+    case "×":
+      return "*";
+    case "÷":
+      return "/";
+    case "%":
+      return "%";
+    default:
+      console.error(`ERROR: Unrecognized operator: ${currentOperator}`);
+      return;
+  }
 }
 
 function add(x, y) {
@@ -57,11 +184,15 @@ function div(x, y) {
   return x / y;
 }
 
-function operate(x, y, operator) {
-  x = +x;
-  y = +y;
+function mod(x, y) {
+  return x % y;
+}
 
-  switch (operator) {
+function operate() {
+  const x = +firstOperand;
+  const y = +secondOperand;
+
+  switch (getOperator()) {
     case "+":
       return add(x, y);
     case "-":
@@ -69,10 +200,19 @@ function operate(x, y, operator) {
     case "*":
       return mul(x, y);
     case "/":
-      if (y === 0) return null;
+      if (y === 0) {
+        clearValues();
+        return;
+      }
       return div(x, y);
+    case "%":
+      if (y === 0) {
+        clearValues();
+        return;
+      }
+      return mod(x, y);
     default:
-      console.error(`ERROR: Unrecognized operator: ${operator}`);
-      return null;
+      console.error(`ERROR: Unrecognized operator: ${currentOperator}`);
+      return;
   }
 }
